@@ -6,3 +6,9 @@ database/*.db-wal
 database/*.db-shm
 .DS_Store
 graphify-out
+.venv/
+models/**/*.pth
+models/**/*.onnx
+models/**/*.mat
+data/aptos2019/*
+!data/aptos2019/.keep
