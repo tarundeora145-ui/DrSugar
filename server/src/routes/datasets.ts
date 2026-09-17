@@ -9,7 +9,7 @@ import { MessidorLoader } from '../datasets/loaders/MessidorLoader';
 
 const router = Router();
 
-const DATA_DIR = path.resolve(__dirname, '../../../../data');
+const DATA_DIR = path.resolve(__dirname, '../../../data');
 
 const getLoaders = () => [
   new AptosLoader(DATA_DIR),

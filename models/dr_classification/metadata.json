@@ -1,0 +1,80 @@
+{
+  "model_name": "DR-SUGAR-Baseline-MobileNetV3",
+  "architecture": "mobilenet_v3_small",
+  "parameters": "2.54M",
+  "version": "1.0.0",
+  "dataset": "APTOS 2019",
+  "dataset_samples": 3662,
+  "classes": 5,
+  "class_mapping": {
+    "0": "No DR",
+    "1": "Mild",
+    "2": "Moderate",
+    "3": "Severe",
+    "4": "Proliferative"
+  },
+  "preprocessing_version": "v1-224-imagenet",
+  "random_seed": 42,
+  "training_config": {
+    "epochs": 3,
+    "optimizer": "Adam",
+    "lr": 0.0001,
+    "batch_size": 16
+  },
+  "checkpoint_path": "models/dr_classification/best_model.pth",
+  "evaluation_split": "split_test.csv",
+  "metrics": {
+    "test_accuracy": 0.7901907356948229,
+    "test_macro_f1": 0.5725796767285938,
+    "test_macro_precision": 0.6267627769127019,
+    "test_macro_recall": 0.5669164721569491,
+    "confusion_matrix": [
+      [
+        178,
+        2,
+        0,
+        0,
+        1
+      ],
+      [
+        5,
+        11,
+        19,
+        1,
+        1
+      ],
+      [
+        0,
+        0,
+        81,
+        6,
+        13
+      ],
+      [
+        1,
+        0,
+        8,
+        4,
+        6
+      ],
+      [
+        0,
+        1,
+        8,
+        5,
+        16
+      ]
+    ],
+    "referable_dr": {
+      "TP": 147,
+      "TN": 196,
+      "FP": 22,
+      "FN": 2,
+      "sensitivity": 0.9865771812080537,
+      "specificity": 0.8990825688073395,
+      "precision": 0.8698224852071006,
+      "f1": 0.9245283018867925
+    }
+  },
+  "training_timestamp": "2026-09-17T21:33:53.040557"
+}

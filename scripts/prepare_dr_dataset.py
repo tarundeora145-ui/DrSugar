@@ -41,6 +41,17 @@ def prepare_dataset(data_dir='data/aptos2019'):
     
     logging.info(f"Split distribution: Train={len(train_df)}, Val={len(val_df)}, Test={len(test_df)}")
     
+    print("\n--- ACTUAL CLASS DISTRIBUTION ---")
+    print("Overall:")
+    print(df_valid['diagnosis'].value_counts().sort_index().to_dict())
+    print("\nTrain Split:")
+    print(train_df['diagnosis'].value_counts().sort_index().to_dict())
+    print("\nVal Split:")
+    print(val_df['diagnosis'].value_counts().sort_index().to_dict())
+    print("\nTest Split:")
+    print(test_df['diagnosis'].value_counts().sort_index().to_dict())
+    print("---------------------------------\n")
+    
     # Save splits
     train_df.to_csv(base_path / 'split_train.csv', index=False)
     val_df.to_csv(base_path / 'split_val.csv', index=False)
