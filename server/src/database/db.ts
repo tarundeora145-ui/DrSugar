@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Point to the root database directory
-const dbDir = path.resolve(__dirname, '../../../../database');
+const dbDir = path.resolve(__dirname, '../../../database');
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }

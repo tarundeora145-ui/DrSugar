@@ -3,6 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import db from '../database/db';
+import { runInference } from '../ml/inference';
 
 const router = Router();
 
@@ -39,22 +40,53 @@ const uploadHandler: RequestHandler = (req, res) => {
   res.json({ success: true, screeningId: info.lastInsertRowid });
 };
 
-const processHandler: RequestHandler = (req, res) => {
+const processHandler: RequestHandler = async (req, res) => {
   const { id } = req.params;
   
-  // Here we pretend to start processing, but immediately fail since no model is present.
-  const stmt = db.prepare(`
-    UPDATE screenings 
-    SET status = ? 
-    WHERE id = ?
-  `);
-  stmt.run('MODEL UNAVAILABLE', id);
+  try {
+    const getStmt = db.prepare('SELECT * FROM screenings WHERE id = ?');
+    const record = getStmt.get(id) as any;
 
-  res.json({ 
-    success: false, 
-    status: 'MODEL UNAVAILABLE',
-    message: 'No trained model weights are currently connected. AI prediction is offline.'
-  });
+    if (!record) {
+      res.status(404).json({ success: false, message: 'Screening not found' });
+      return;
+    }
+
+    const imagePath = path.join(uploadDir, record.image_path);
+    if (!fs.existsSync(imagePath)) {
+      res.status(404).json({ success: false, message: 'Image file not found on disk' });
+      return;
+    }
+
+    const imageBuffer = fs.readFileSync(imagePath);
+    
+    // Update status to PROCESSING
+    db.prepare('UPDATE screenings SET status = ? WHERE id = ?').run('PROCESSING', id);
+
+    // Run actual ONNX inference
+    const result = await runInference(imageBuffer);
+
+    // Update status to COMPLETED
+    const updateStmt = db.prepare(`
+      UPDATE screenings 
+      SET status = ?, result_grade = ?
+      WHERE id = ?
+    `);
+    updateStmt.run('COMPLETED', result.prediction, id);
+
+    res.json({ 
+      success: true, 
+      status: 'COMPLETED',
+      data: result 
+    });
+  } catch (error: any) {
+    db.prepare('UPDATE screenings SET status = ? WHERE id = ?').run('FAILED', id);
+    res.status(500).json({ 
+      success: false, 
+      status: 'FAILED',
+      message: error.message 
+    });
+  }
 };
 
 const statusHandler: RequestHandler = (req, res) => {
