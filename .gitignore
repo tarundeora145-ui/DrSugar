@@ -1,37 +1,43 @@
+# Dependencies & Virtual Envs
 node_modules/
-dist/
-build/
-.env
-.env.local
-database/*.db
-database/*.db-wal
-database/*.db-shm
-.DS_Store
-graphify-out/
 .venv/
+venv/
+env/
 __pycache__/
 *.pyc
-*.log
 
-# Exclude model binary weights and generated PNG/data artifacts
-models/**/*.pth
-models/**/*.onnx
-models/**/*.onnx.data
-models/**/*.pt
-models/**/*.mat
-models/**/*.data
-models/**/*.png
+# Build & Output directories
+dist/
+build/
+coverage/
 
-# Exclude raw datasets and generated output/upload image files
-data/aptos2019/*
-!data/aptos2019/.keep
-data/idrid/*
-!data/idrid/.keep
-data/drive/*
-!data/drive/.keep
-data/messidor2/*
-!data/messidor2/.keep
-data/outputs/*
-!data/outputs/.keep
-data/uploads/*
-!data/uploads/.keep
+# Environment & Secrets
+.env
+.env.*
+.DS_Store
+
+# Data & Datasets
+data/aptos2019/
+data/idrid/
+data/drive/
+data/messidor2/
+data/uploads/
+data/outputs/
+
+# Models & Weights
+models/
+*.pth
+*.pt
+*.onnx
+*.onnx.data
+*.mat
+
+# Database
+database/*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Tools & Local Output
+graphify-out/
