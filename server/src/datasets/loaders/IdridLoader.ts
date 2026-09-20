@@ -14,7 +14,7 @@ export class IdridLoader extends BaseLoader {
       this.updateDBStatus('MISSING');
       return { status: 'MISSING', messages: ['Dataset directory missing'], imageCount: 0, labelCount: 0 };
     }
-    const hasImages = this.checkDirectoryExists('Disease Grading');
+    const hasImages = this.checkDirectoryExists('B. Disease Grading');
     const status = hasImages ? 'CONNECTED' : 'PARTIAL';
     this.updateDBStatus(status);
     return { status, messages: ['Scan complete'], imageCount: 0, labelCount: 0 };
@@ -32,22 +32,23 @@ export class IdridLoader extends BaseLoader {
       return result;
     }
 
-    // Checking Disease Grading folder
-    const images = this.getImagesInDir('Disease Grading/Original Images/Training Set');
+    // Actual extracted path from B. Disease Grading.zip
+    const images = this.getImagesInDir('B. Disease Grading/1. Original Images/a. Training Set');
     result.imageCount += images.length;
-    images.forEach(img => this.insertDBFile(img, `Disease Grading/Original Images/Training Set/\${img}`, 'fundus'));
+    images.forEach(img => this.insertDBFile(img, `B. Disease Grading/1. Original Images/a. Training Set/${img}`, 'fundus'));
 
     if (images.length === 0) {
-      result.messages.push('No images found in Disease Grading/Original Images/Training Set');
+      result.messages.push('No images found in B. Disease Grading/1. Original Images/a. Training Set');
     }
 
-    if (this.checkFileExists('Disease Grading/Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv')) {
+    // Actual label path from B. Disease Grading.zip extraction
+    if (this.checkFileExists('B. Disease Grading/2. Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv')) {
       try {
-        const fileContent = fs.readFileSync(path.join(this.datasetPath, 'Disease Grading/Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv'));
+        const fileContent = fs.readFileSync(path.join(this.datasetPath, 'B. Disease Grading/2. Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv'));
         const parsedLabels = parse(fileContent, { columns: true, skip_empty_lines: true });
         result.labelCount += parsedLabels.length;
         parsedLabels.forEach((record: any) => {
-          const filename = `\${record['Image name']}.jpg`;
+          const filename = `${record['Image name']}.jpg`;
           this.insertDBLabel(filename, parseInt(record['Retinopathy grade'], 10));
           
           if (record['Risk of macular edema ']) {

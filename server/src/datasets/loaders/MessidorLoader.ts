@@ -34,27 +34,33 @@ export class MessidorLoader extends BaseLoader {
 
     const images = this.getImagesInDir('IMAGES');
     result.imageCount = images.length;
-    images.forEach(img => this.insertDBFile(img, `IMAGES/\${img}`, 'fundus'));
+    images.forEach(img => this.insertDBFile(img, `IMAGES/${img}`, 'fundus'));
 
-    if (this.checkFileExists('messidor_data.csv')) {
+    // Actual CSV is messidor-2.csv with semicolon-delimited left;right image pairs.
+    // This file contains image pairing metadata only — it does NOT contain
+    // adjudicated DR grades. DR ground truth labels are not bundled with the
+    // standard Messidor-2 image release. labelCount stays 0.
+    if (this.checkFileExists('messidor-2.csv')) {
       try {
-        const fileContent = fs.readFileSync(path.join(this.datasetPath, 'messidor_data.csv'));
-        const parsedLabels = parse(fileContent, { columns: true, skip_empty_lines: true });
-        result.labelCount = parsedLabels.length;
-        parsedLabels.forEach((record: any) => {
-          this.insertDBLabel(record.image_id, parseInt(record.adjudicated_dr_grade, 10));
-          this.insertDBAnnotation(record.image_id, 'GROUND_TRUTH', JSON.stringify({ available: true, gradable: record.adjudicated_gradable }));
+        const fileContent = fs.readFileSync(path.join(this.datasetPath, 'messidor-2.csv'), 'utf8');
+        const lines = fileContent.split('\n').filter(l => l.trim() && !l.startsWith('left'));
+        // Each line is: left_image;right_image — register as pairing annotations only
+        lines.forEach(line => {
+          const parts = line.split(';');
+          const left = parts[0]?.trim();
+          const right = parts[1]?.trim();
+          if (left) this.insertDBAnnotation(left, 'LEFT_RIGHT_PAIR', JSON.stringify({ left, right: right || null }));
         });
+        result.messages.push(`messidor-2.csv present: ${lines.length} image pairs found. No adjudicated DR grades in this release.`);
       } catch (err) {
-        result.messages.push('Error parsing Messidor CSV.');
+        result.messages.push('Error parsing messidor-2.csv.');
       }
     } else {
-      result.messages.push('messidor_data.csv missing.');
+      result.messages.push('messidor-2.csv missing.');
     }
 
-    if (result.imageCount > 0 && result.labelCount > 0 && result.messages.length === 0) {
-      result.status = 'CONNECTED';
-    } else if (result.imageCount > 0 || result.labelCount > 0) {
+    // PARTIAL: images found but no DR grade labels available in this release
+    if (result.imageCount > 0) {
       result.status = 'PARTIAL';
     } else {
       result.status = 'MISSING';

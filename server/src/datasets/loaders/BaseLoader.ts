@@ -79,7 +79,7 @@ export abstract class BaseLoader {
     
     return fs.readdirSync(fullPath).filter(file => {
       const ext = path.extname(file).toLowerCase();
-      if (!['.png', '.jpg', '.jpeg', '.tif', '.tiff'].includes(ext)) return false;
+      if (!['.png', '.jpg', '.jpeg', '.tif', '.tiff', '.gif'].includes(ext)) return false;
       const stat = fs.statSync(path.join(fullPath, file));
       return stat.isFile() && stat.size > 0;
     });
