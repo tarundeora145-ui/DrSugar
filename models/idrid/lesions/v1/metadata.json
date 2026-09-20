@@ -1,0 +1,93 @@
+{
+  "model_name": "DR-SUGAR-IDRiD-Lesions-V1",
+  "training_time_s": 3175.0604331493378,
+  "cv_summary": {
+    "mean_dice": {
+      "mean": 0.3,
+      "std": 0.29154759474226505
+    },
+    "MA_dice": {
+      "mean": 0.2,
+      "std": 0.4
+    },
+    "MA_iou": {
+      "mean": 0.2,
+      "std": 0.4
+    },
+    "MA_sensitivity": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "MA_specificity": {
+      "mean": 0.5999787764115913,
+      "std": 0.4898806204936751
+    },
+    "MA_precision": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "HE_dice": {
+      "mean": 0.4,
+      "std": 0.48989794855663565
+    },
+    "HE_iou": {
+      "mean": 0.4,
+      "std": 0.48989794855663565
+    },
+    "HE_sensitivity": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "HE_specificity": {
+      "mean": 0.7997391093861049,
+      "std": 0.3998498659044555
+    },
+    "HE_precision": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "EX_dice": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "EX_iou": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "EX_sensitivity": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "EX_specificity": {
+      "mean": 0.19999826604672588,
+      "std": 0.39999497153603225
+    },
+    "EX_precision": {
+      "mean": 0.0,
+      "std": 0.0
+    },
+    "SE_dice": {
+      "mean": 0.6,
+      "std": 0.48989794855663565
+    },
+    "SE_iou": {
+      "mean": 0.6,
+      "std": 0.48989794855663565
+    },
+    "SE_sensitivity": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "SE_specificity": {
+      "mean": 0.6000000762939599,
+      "std": 0.4898978551160144
+    },
+    "SE_precision": {
+      "mean": 0.0,
+      "std": 0.0
+    }
+  },
+  "architecture": "MobileNetV3-Small encoder + U-Net decoder",
+  "input_size": 512,
+  "n_folds": 5
+}

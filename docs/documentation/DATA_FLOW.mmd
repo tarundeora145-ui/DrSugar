@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    actor Operator as Screening Operator
+    participant UI as React Frontend
+    participant Server as Express API
+    participant ONNX as ONNX Inference Engine
+    participant DB as SQLite Database
+    participant Worker as Python Evidence Worker
+
+    Operator->>UI: Upload Fundus Scan + Input Demographics (Language: EN/HI)
+    UI->>Server: POST /api/screening/upload (Multipart Image)
+    Server->>DB: INSERT INTO screenings (status = 'UPLOADED')
+    Server-->>UI: Return screeningId (e.g., DR-000022)
+
+    UI->>Server: POST /api/screening/:id/process
+    Server->>ONNX: Execute runInference(imageBuffer)
+    ONNX->>ONNX: Sharp Resize (224x224 RGB, fit fill)
+    ONNX->>ONNX: ImageNet Normalization & Softmax
+    ONNX-->>Server: Return Prediction (Grade 0-4), Probabilities & Confidence
+    Server->>DB: UPDATE screenings SET status='CLASSIFIED', result_grade, referable_dr
+
+    Server-->>UI: Return Immediate Response (<80ms)\n(Grade, Confidence, Referable Flag)
+    UI-->>Operator: Display Primary Classification Result Immediately
+
+    Note over Server,Worker: Asynchronous Background Processing
+    Server->>Worker: Enqueue JSON via Stdin (id, imagePath, predictedClass)
+    Worker->>Worker: Generate Grad-CAM Heatmap Overlay
+    Worker->>Worker: Execute IDRiD Lesion Segmentation (MA, HE, EX, SE %)
+    Worker->>Worker: Execute DRIVE Vessel Segmentation Coverage %
+    Worker-->>Server: Emit JSON via Stdout (status = 'OK', overlay PNG paths)
+
+    Server->>DB: UPDATE screenings SET status='COMPLETED', gradcam_path, lesion_data, vessel_data
+    UI->>Server: Poll GET /api/screening/:id/evidence-status
+    Server-->>UI: Return status = 'READY' + Evidence PNG URLs
+    UI-->>Operator: Render Interactive Grad-CAM Heatmap & Lesion Breakdown

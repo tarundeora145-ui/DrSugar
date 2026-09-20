@@ -1,0 +1,28 @@
+graph TD
+    RawImg["Raw Retinal Fundus Scan\n(JPEG / PNG)"] --> SharpProc["Sharp Image Preprocessing\n(Resize to 224x224 RGB, fit: fill)"]
+    SharpProc --> NormTensor["ImageNet Tensor Normalization\nmean=[0.485, 0.456, 0.406]\nstd=[0.229, 0.224, 0.225]"]
+    
+    subgraph PrimaryClassification["Phase 1: Primary Classification Engine (<80 ms)"]
+        NormTensor --> ONNXModel["MobileNetV3-Small ONNX Model\n(2.54M Parameters)"]
+        ONNXModel --> RawLogits["Raw Output Logits (5 Classes)"]
+        RawLogits --> SoftmaxCalc["Numerically Stable Softmax Transformation"]
+        SoftmaxCalc --> PredGrade["Predicted DR Grade (0 to 4)"]
+        SoftmaxCalc --> ConfCalc["Model Confidence Score (Max Prob %)"]
+        PredGrade --> ReferableCheck{"Grade >= 2 ?"}
+        ReferableCheck -->|Yes| ReferableDR["Referable DR (Specialist Referral)"]
+        ReferableCheck -->|No| RoutineDR["Non-Referable DR (Routine Care)"]
+    end
+
+    subgraph ExplainabilityPipeline["Phase 2: Asynchronous Evidence Engine (3-5 s)"]
+        RawImg --> PyTorchWorker["Python Evidence IPC Worker"]
+        PyTorchWorker --> GradCAMBranch["Grad-CAM Branch\nMobileNetV3 Target Layer features[-1]"]
+        PyTorchWorker --> LesionBranch["IDRiD Lesion Segmentation U-Net\n(Fold 1 best.pth)"]
+        PyTorchWorker --> VesselBranch["DRIVE Vessel Segmentation U-Net\n(Fold 1 best.pth)"]
+
+        GradCAMBranch --> GradCAMOverlay["Grad-CAM Heatmap Overlay (50% Opacity)"]
+        LesionBranch --> LesionMetrics["Lesion Area Coverage %\n(MA, HE, EX, SE)"]
+        VesselBranch --> VesselCoverage["Vascular Coverage %"]
+    end
+
+    PrimaryClassification --> SQLiteDB[("SQLite Database & Reports Engine")]
+    ExplainabilityPipeline --> SQLiteDB

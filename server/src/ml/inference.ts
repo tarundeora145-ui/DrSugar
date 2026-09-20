@@ -33,7 +33,7 @@ export async function loadModel() {
 
 export async function preprocessImage(imageBuffer: Buffer): Promise<Float32Array> {
   const { data, info } = await sharp(imageBuffer)
-    .resize(224, 224, { fit: 'cover' })
+    .resize(224, 224, { fit: 'fill' })  // must match training: torchvision.Resize((224,224)) squashes, does NOT crop
     .raw()
     .toBuffer({ resolveWithObject: true });
 

@@ -1,0 +1,21 @@
+graph TD
+    subgraph ClientLayer["Edge Client Layer (PHC / Rural Clinic)"]
+        Browser["Healthcare Worker Web Browser\n(Google Chrome / Edge / Firefox)"]
+    end
+
+    subgraph EdgeServer["Edge Station / Server Node"]
+        ViteDevServer["Vite Static Server / SPA Handler\n(Port 5173)"]
+        ExpressBackend["Express 5 REST API Server\n(Node.js v20+ / Port 5000)"]
+        ONNXInference["ONNX Runtime Engine\n(In-Process C++ Bindings)"]
+        SQLiteDB[("SQLite Database WAL Mode\n(database/dr_sugar.db)")]
+        PythonWorker["Persistent Python IPC Worker\n(.venv PyTorch Environment)"]
+        LocalStorage["Local Storage Directory\n(data/uploads, data/outputs)"]
+    end
+
+    Browser -->|HTTP Port 5173| ViteDevServer
+    Browser -->|REST API Calls Port 5000| ExpressBackend
+    ExpressBackend -->|In-Process Native Call| ONNXInference
+    ExpressBackend -->|Synchronous Queries| SQLiteDB
+    ExpressBackend -->|Stdin/Stdout Stdio Pipe| PythonWorker
+    ExpressBackend -->|Static File Stream| LocalStorage
+    PythonWorker -->|Save PNG Artifacts| LocalStorage

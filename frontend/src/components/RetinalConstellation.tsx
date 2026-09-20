@@ -38,7 +38,7 @@ export const RetinalConstellation = () => {
       '#F59E0B', // Amber
       '#14B8A6', // Teal
       '#6366F1', // Indigo/Blue-violet
-      '#333333'  // Muted gray for depth
+      '#94A3B8'  // Muted silver/slate for depth
     ];
 
     const particles: Particle[] = [];
@@ -68,7 +68,13 @@ export const RetinalConstellation = () => {
     let animationFrameId: number;
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      
+      if (isLight) {
+        ctx.fillStyle = 'rgba(248, 250, 252, 1)';
+      } else {
+        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+      }
       ctx.fillRect(0, 0, width, height);
 
       // Update & Draw Particles
@@ -121,7 +127,9 @@ export const RetinalConstellation = () => {
             const alpha = 1 - (dist / maxDistance);
             
             // Color interpolation (simple blending)
-            ctx.strokeStyle = `rgba(139, 92, 246, ${alpha * 0.3})`; // Violet base tint for lines
+            ctx.strokeStyle = isLight
+              ? `rgba(124, 58, 237, ${alpha * 0.25})`
+              : `rgba(139, 92, 246, ${alpha * 0.3})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
@@ -144,7 +152,6 @@ export const RetinalConstellation = () => {
     <canvas 
       ref={canvasRef} 
       className="fixed inset-0 w-full h-full pointer-events-none z-[-1]"
-      style={{ background: '#000000' }}
     />
   );
 };

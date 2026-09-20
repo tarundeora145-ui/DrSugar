@@ -18,6 +18,29 @@ const getLoaders = () => [
   new MessidorLoader(DATA_DIR)
 ];
 
+const DATASET_METADATA: Record<string, { purpose: string; source: string; task: string }> = {
+  aptos2019: {
+    purpose: 'DR severity grading (5-class: Grade 0 to Grade 4)',
+    task: 'DR Grading',
+    source: 'https://www.kaggle.com/c/aptos2019-blindness-detection'
+  },
+  idrid: {
+    purpose: 'DR grading, lesion annotations (MA, HE, EX, SE), retinal analysis, optic disc/fovea',
+    task: 'Lesion & Grading',
+    source: 'https://ieeedataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid'
+  },
+  drive: {
+    purpose: 'Retinal vessel segmentation and vascular structure mapping',
+    task: 'Vessel Segmentation',
+    source: 'https://drive.grand-challenge.org/'
+  },
+  messidor2: {
+    purpose: 'External robustness and generalization testing on independent clinical data',
+    task: 'External Robustness',
+    source: 'https://www.adcis.net/en/third-party/messidor2/'
+  }
+};
+
 const scanDatasetsHandler: RequestHandler = (req, res) => {
   try {
     if (!fs.existsSync(DATA_DIR)) {
@@ -27,26 +50,53 @@ const scanDatasetsHandler: RequestHandler = (req, res) => {
     const loaders = getLoaders();
     const results = loaders.map(loader => loader.scan());
     
-    // Also fetch updated statuses from DB to return
+    // Fetch updated statuses from DB
     const stmt = db.prepare('SELECT * FROM datasets');
-    const rows = stmt.all();
+    const rows = stmt.all() as any[];
 
-    res.json({ success: true, scanned: rows, validation: results });
+    const enriched = rows.map(r => ({
+      ...r,
+      ...(DATASET_METADATA[r.id] || {})
+    }));
+
+    res.json({ success: true, scanned: enriched, validation: results });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to scan datasets' });
   }
 };
 
 const getDatasetsHandler: RequestHandler = (req, res) => {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+
   const stmt = db.prepare('SELECT * FROM datasets');
-  const rows = stmt.all();
-  res.json(rows);
+  let rows = stmt.all() as any[];
+
+  // Auto-scan if table is currently empty
+  if (rows.length === 0) {
+    const loaders = getLoaders();
+    loaders.forEach(loader => loader.scan());
+    rows = db.prepare('SELECT * FROM datasets').all() as any[];
+  }
+
+  // Count images for each dataset
+  const enriched = rows.map(r => {
+    const imgCountRow = db.prepare("SELECT COUNT(*) as count FROM dataset_files WHERE dataset_id = ? AND type = 'fundus'").get(r.id) as any;
+    return {
+      ...r,
+      image_count: imgCountRow?.count || 0,
+      ...(DATASET_METADATA[r.id] || {})
+    };
+  });
+
+  res.json(enriched);
 };
 
 const validateDatasetHandler: RequestHandler = (req, res) => {
   const id = req.params.id as string;
   const loaders = getLoaders();
-  const loader = loaders.find(l => l.id === id); // id is protected, but we can check if it matches the class initialization, or just create it directly
+  const loader = loaders.find(l => l.id === id);
 
   if (!loader) {
     res.status(404).json({ error: 'Dataset not found or unsupported' });
@@ -67,7 +117,7 @@ const getDatasetImagesHandler: RequestHandler = (req, res) => {
   const labels = db.prepare('SELECT * FROM dataset_labels WHERE dataset_id = ?').all(id) as any[];
   const annotations = db.prepare('SELECT * FROM dataset_annotations WHERE dataset_id = ?').all(id) as any[];
 
-  // Join them in memory
+  // Join in memory
   const results = files.map(file => {
     const fileLabels = labels.filter(l => l.filename === file.filename);
     const drGrade = fileLabels.length > 0 ? fileLabels[0].dr_grade : null;

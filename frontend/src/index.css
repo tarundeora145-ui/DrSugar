@@ -1,22 +1,51 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-background: #000000;
   --color-foreground: #FFFFFF;
-  
-  --color-muted: #111111;
-  --color-muted-foreground: #94A3B8; /* Silver */
-  
-  --color-primary: #7c3aed; /* Electric Iris */
+  --color-card: #0a0a0a;
+  --color-card-foreground: #FFFFFF;
+  --color-muted: #18181b;
+  --color-muted-foreground: #94A3B8;
+  --color-primary: #7c3aed;
   --color-primary-foreground: #FFFFFF;
-  
-  --color-accent: #f59e0b; /* Saffron */
+  --color-accent: #f59e0b;
   --color-accent-foreground: #000000;
-  
-  --color-success: #0d9488; /* Deep Verdant */
+  --color-success: #0d9488;
   --color-success-foreground: #FFFFFF;
+  --color-border: #27272a;
+}
 
-  --color-border: #E2E8F0; /* Ash Gray */
+[data-theme="light"] {
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-muted: #e2e8f0;
+  --color-muted-foreground: #64748b;
+  --color-primary: #7c3aed;
+  --color-primary-foreground: #FFFFFF;
+  --color-accent: #d97706;
+  --color-accent-foreground: #ffffff;
+  --color-success: #0d9488;
+  --color-success-foreground: #FFFFFF;
+  --color-border: #cbd5e1;
+}
+
+@theme {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-border: var(--color-border);
 }
 
 @layer base {
@@ -28,6 +57,7 @@
     padding: 0;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   
   /* Oversized, lightweight typography */

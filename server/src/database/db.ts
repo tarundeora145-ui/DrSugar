@@ -56,14 +56,29 @@ db.exec(`
     FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE IF NOT EXISTS screenings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    patient_id TEXT,
-    image_path TEXT NOT NULL,
-    status TEXT NOT NULL,
-    result_grade INTEGER,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+    CREATE TABLE IF NOT EXISTS screenings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      display_id TEXT,
+      patient_id TEXT,
+      patient_name TEXT,
+      patient_age INTEGER,
+      patient_gender TEXT,
+      preferred_language TEXT DEFAULT 'en',
+      image_path TEXT NOT NULL,
+      status TEXT NOT NULL,
+      result_grade INTEGER,
+      probabilities TEXT,
+      confidence REAL,
+      referable_dr INTEGER,
+      model_version TEXT,
+      gradcam_path TEXT,
+      lesion_path TEXT,
+      lesion_data TEXT,
+      vessel_path TEXT,
+      vessel_data TEXT,
+      evidence_status TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 
   CREATE TABLE IF NOT EXISTS screening_quality (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,5 +127,17 @@ db.exec(`
     FOREIGN KEY(dataset_id) REFERENCES datasets(id) ON DELETE CASCADE
   );
 `);
+
+try {
+  db.exec('ALTER TABLE screenings ADD COLUMN evidence_status TEXT');
+} catch (err) {
+  // Column already exists
+}
+
+try {
+  db.exec('ALTER TABLE screenings ADD COLUMN display_id TEXT');
+} catch (err) {
+  // Column already exists
+}
 
 export default db;

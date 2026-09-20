@@ -1,0 +1,33 @@
+graph TD
+    User["User / Healthcare Worker"] -->|HTTP / SPA Navigation| ReactFrontend["React 19 SPA Frontend\n(Vite + Tailwind CSS v4)"]
+    
+    subgraph FrontendComponents["Frontend Layer"]
+        ReactFrontend --> IntroPage["Introduction Page"]
+        ReactFrontend --> ScreeningPage["Screening Upload Page"]
+        ReactFrontend --> PatientReport["Bilingual Patient Report (EN/HI)"]
+        ReactFrontend --> DoctorReport["Ophthalmologist Clinical Report"]
+        ReactFrontend --> DashPage["Operational Dashboard"]
+        ReactFrontend --> SimPage["Queue Simulation Page"]
+        ReactFrontend --> ValPage["Validation Dashboard"]
+    end
+
+    ReactFrontend -->|REST API HTTP Calls| ExpressServer["Express 5 Node.js API Server"]
+
+    subgraph BackendLayer["Backend Server Layer"]
+        ExpressServer -->|Sync Query| SQLiteDB[("SQLite Database\n(database/dr_sugar.db)")]
+        ExpressServer -->|In-Process C++ Call| ONNXEngine["ONNX Runtime Node\n(MobileNetV3 5-Class)"]
+        ExpressServer -->|Static File Server| FileOutputs["Local Image Storage\n(data/uploads, data/outputs)"]
+    end
+
+    ExpressServer -->|Stdin/Stdout JSON IPC| PythonWorker["Persistent Python Evidence Worker\n(scripts/evidence_worker.py)"]
+
+    subgraph PyTorchWorker["Python ML Worker Layer"]
+        PythonWorker --> GradCAMEngine["Grad-CAM Engine\n(MobileNetV3 Feature Map)"]
+        PythonWorker --> LesionEngine["IDRiD Lesion Segmentation\n(PyTorch U-Net Fold 1)"]
+        PythonWorker --> VesselEngine["DRIVE Vessel Segmentation\n(PyTorch U-Net Fold 1)"]
+    end
+
+    GradCAMEngine -->|Write PNG Overlay| FileOutputs
+    LesionEngine -->|Write PNG Overlay + Area %| FileOutputs
+    VesselEngine -->|Write PNG Overlay + Coverage %| FileOutputs
+    FileOutputs -->|Save Evidence Status| SQLiteDB

@@ -22,12 +22,13 @@ interface Dataset {
 const API_BASE_URL = 'http://localhost:5000/api';
 
 interface DataExplorerProps {
+  selectedDataset?: string;
   onDatasetChange?: (datasetId: string) => void;
 }
 
-export const DataExplorer = ({ onDatasetChange }: DataExplorerProps = {}) => {
+export const DataExplorer = ({ selectedDataset, onDatasetChange }: DataExplorerProps = {}) => {
   const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [activeDataset, setActiveDataset] = useState<string>('');
+  const [activeDataset, setActiveDataset] = useState<string>(selectedDataset || '');
   const [images, setImages] = useState<DatasetImage[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -36,9 +37,19 @@ export const DataExplorer = ({ onDatasetChange }: DataExplorerProps = {}) => {
       .then(res => res.json())
       .then(data => {
         setDatasets(data);
-        if (data.length > 0) setActiveDataset(data[0].id);
+        if (data.length > 0 && !activeDataset) {
+          const initial = data[0].id;
+          setActiveDataset(initial);
+          if (onDatasetChange) onDatasetChange(initial);
+        }
       });
   }, []);
+
+  useEffect(() => {
+    if (selectedDataset && selectedDataset !== activeDataset) {
+      setActiveDataset(selectedDataset);
+    }
+  }, [selectedDataset]);
 
   useEffect(() => {
     if (!activeDataset) return;
@@ -47,20 +58,29 @@ export const DataExplorer = ({ onDatasetChange }: DataExplorerProps = {}) => {
     fetch(`${API_BASE_URL}/datasets/${activeDataset}/images`)
       .then(res => res.json())
       .then(data => {
-        setImages(data);
+        setImages(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setImages([]);
         setLoading(false);
       });
-  }, [activeDataset, onDatasetChange]);
+  }, [activeDataset]);
+
+  const handleSelect = (id: string) => {
+    setActiveDataset(id);
+    if (onDatasetChange) onDatasetChange(id);
+  };
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-7xl">
-      <div className="flex gap-4 border-b border-muted pb-4">
+      <div className="flex flex-wrap gap-4 border-b border-border pb-4">
         {datasets.map(d => (
           <button
             key={d.id}
-            onClick={() => setActiveDataset(d.id)}
-            className={`px-4 py-2 uppercase tracking-widest text-sm transition-colors ${
-              activeDataset === d.id ? 'text-primary border-b-2 border-primary -mb-[17px]' : 'text-muted-foreground hover:text-foreground'
+            onClick={() => handleSelect(d.id)}
+            className={`px-4 py-2 uppercase tracking-widest text-sm transition-colors cursor-pointer ${
+              activeDataset === d.id ? 'text-primary border-b-2 border-primary -mb-[17px] font-semibold' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {d.name} ({d.status})
@@ -68,16 +88,19 @@ export const DataExplorer = ({ onDatasetChange }: DataExplorerProps = {}) => {
         ))}
       </div>
 
-      <div className="min-h-[400px]">
+      <div className="min-h-[300px]">
         {loading ? (
-          <p className="text-muted-foreground uppercase tracking-widest text-sm">Loading samples...</p>
+          <p className="text-muted-foreground uppercase tracking-widest text-sm animate-pulse">Loading samples for {activeDataset}...</p>
         ) : images.length === 0 ? (
-          <p className="text-muted-foreground uppercase tracking-widest text-sm">No images found for this dataset.</p>
+          <div className="border border-border p-12 text-center bg-card/50">
+            <p className="text-muted-foreground uppercase tracking-widest text-sm mb-2">No active samples loaded in SQLite for dataset: <strong className="text-foreground">{activeDataset}</strong></p>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">Place raw dataset files in `data/{activeDataset}/` and run full evaluation below to index images & ground truth annotations.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {images.slice(0, 12).map(img => (
               <div key={img.id} className="flex flex-col gap-2">
-                <div className="bg-muted w-full aspect-square relative overflow-hidden rounded-sm group">
+                <div className="bg-muted w-full aspect-square relative overflow-hidden border border-border group">
                   <img 
                     src={`${API_BASE_URL}/datasets/${activeDataset}/image/${img.filename}`}
                     alt={img.filename}
@@ -91,14 +114,14 @@ export const DataExplorer = ({ onDatasetChange }: DataExplorerProps = {}) => {
                 </div>
                 <div className="flex justify-between items-start mt-2">
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold truncate max-w-[150px]">{img.filename}</span>
+                    <span className="text-sm font-semibold truncate max-w-[150px]">{img.filename}</span>
                     <span className="text-xs text-muted-foreground uppercase tracking-widest">
                       {img.dr_grade !== null ? `DR Grade: ${img.dr_grade}` : 'No Grade'}
                     </span>
                   </div>
                   <div className="flex flex-col items-end">
                     {img.annotations.map((ann, i) => (
-                      <span key={i} className="text-xs text-accent uppercase tracking-widest">
+                      <span key={i} className="text-xs text-accent uppercase tracking-widest font-semibold">
                         {ann.type === 'DME' ? `DME Risk: ${ann.data.risk}` : ann.type}
                       </span>
                     ))}
