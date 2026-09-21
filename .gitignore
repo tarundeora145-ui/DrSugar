@@ -1,12 +1,5 @@
-# Dependencies & Virtual Envs
+# Dependencies & Builds
 node_modules/
-.venv/
-venv/
-env/
-__pycache__/
-*.pyc
-
-# Build & Output directories
 dist/
 build/
 coverage/
@@ -14,9 +7,8 @@ coverage/
 # Environment & Secrets
 .env
 .env.*
-.DS_Store
 
-# Data & Datasets
+# Datasets, Uploads & Generated Outputs
 data/aptos2019/
 data/idrid/
 data/drive/
@@ -24,7 +16,7 @@ data/messidor2/
 data/uploads/
 data/outputs/
 
-# Models & Weights
+# Models & Checkpoints
 models/
 *.pth
 *.pt
@@ -32,12 +24,18 @@ models/
 *.onnx.data
 *.mat
 
-# Database
+# Database Files
 database/*.db
-*.db-shm
-*.db-wal
-*.sqlite
-*.sqlite3
+database/*.db-shm
+database/*.db-wal
+*.db
 
-# Tools & Local Output
+# Virtual Environments & Python Cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# IDE & System
+.DS_Store
 graphify-out/
