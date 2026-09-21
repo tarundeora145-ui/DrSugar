@@ -24,7 +24,7 @@ export const SimulationDashboard = () => {
     setResult(null);
     setErrorMsg(null);
     try {
-      const res = await fetch('http://localhost:5000/api/simulation/run', {
+      const res = await fetch('/api/simulation/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)

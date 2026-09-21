@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-const API_BASE_URL = 'http://localhost:5000/api';
-const SERVER_URL = 'http://localhost:5000';
+const API_BASE_URL = '/api';
+const SERVER_URL = '';
 
 interface EvidenceStatus {
   status: 'PENDING' | 'READY' | 'FAILED';

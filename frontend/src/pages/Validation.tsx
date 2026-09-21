@@ -14,7 +14,7 @@ interface DatasetInfo {
   last_scanned?: string;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 const Validation = () => {
   const [datasets, setDatasets] = useState<DatasetInfo[]>([]);

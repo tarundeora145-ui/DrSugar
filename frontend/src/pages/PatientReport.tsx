@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:5000/api';
-const SERVER_URL = 'http://localhost:5000';
+const API_BASE_URL = '/api';
+const SERVER_URL = '';
 
 // ── translations ──────────────────────────────────────────────────────────────
 // Only 'en' and 'hi' are supported. All strings sourced from the DR-SUGAR
