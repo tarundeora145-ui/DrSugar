@@ -15,11 +15,12 @@ function findModelMetadataPath(datasetId: string): string | null {
   if (!rel) return null;
 
   const candidates = [
+    process.env.MODELS_DIR ? path.join(process.env.MODELS_DIR, '..', rel) : '',
     path.resolve(__dirname, '../../..', rel),
     path.resolve(__dirname, '../../../..', rel),
     path.resolve(process.cwd(), '..', rel),
     path.resolve(process.cwd(), rel)
-  ];
+  ].filter(Boolean);
 
   for (const p of candidates) {
     if (fs.existsSync(p)) return p;

@@ -3,12 +3,11 @@ import path from 'path';
 import fs from 'fs';
 
 // Point to the root database directory
-const dbDir = path.resolve(__dirname, '../../../database');
+const dbPath = process.env.DATABASE_PATH || path.join(path.resolve(__dirname, '../../../database'), 'dr_sugar.db');
+const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
-
-const dbPath = path.join(dbDir, 'dr_sugar.db');
 
 // Initialize database
 const db = new Database(dbPath);

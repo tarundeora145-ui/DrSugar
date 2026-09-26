@@ -9,15 +9,16 @@ import { runInference } from '../ml/inference';
 const router = Router();
 
 // ── directories ─────────────────────────────────────────────────────────────
-const outputDir = path.join(process.cwd(), '..', 'data', 'outputs');
-const uploadDir  = path.join(process.cwd(), '..', 'data', 'uploads');
+const rootDir = process.cwd();
+const outputDir = process.env.OUTPUT_DIR || path.join(rootDir, '..', 'data', 'outputs');
+const uploadDir  = process.env.UPLOAD_DIR || path.join(rootDir, '..', 'data', 'uploads');
 for (const d of [outputDir, uploadDir]) {
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 }
 
-// ── project root (needed for Python scripts) ────────────────────────────────
-const rootDir   = path.resolve(process.cwd(), '..');
-const pythonExe = path.join(rootDir, '.venv', 'Scripts', 'python.exe');
+// ── Python Worker (Linux compatible) ────────────────────────────────────────
+const pythonExe = process.env.PYTHON_BIN || path.join(rootDir, '..', '.venv', 'Scripts', 'python.exe');
+const workerScript = process.env.EVIDENCE_WORKER_PATH || path.join(rootDir, '..', 'scripts', 'evidence_worker.py');
 
 // ── multer ───────────────────────────────────────────────────────────────────
 const storage = multer.diskStorage({
@@ -52,7 +53,7 @@ class EvidenceWorker {
 
   private startWorker() {
     console.log('[evidence] Starting persistent Python worker...');
-    this.worker = spawn(pythonExe, ['scripts/evidence_worker.py'], { cwd: rootDir });
+    this.worker = spawn(pythonExe, [workerScript]);
     
     // Using readline to parse stdout JSON lines
     const readline = require('readline');

@@ -21,9 +21,12 @@ def main():
     eprint("Loading models...")
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    gradcam_model = generate_gradcam.build_model("models/dr_classification/best_model.pth").to(device)
-    lesion_model = run_lesion_inference.load_model("models/idrid/lesions/v3/fold1_best.pth").to(device)
-    vessel_model = run_vessel_inference.load_model("models/drive/v1/fold1_best.pth").to(device)
+    import os
+    models_dir = os.getenv("MODELS_DIR", str(Path(__file__).parent.parent / "models"))
+    
+    gradcam_model = generate_gradcam.build_model(str(Path(models_dir) / "dr_classification" / "best_model.pth")).to(device)
+    lesion_model = run_lesion_inference.load_model(str(Path(models_dir) / "idrid" / "lesions" / "v3" / "fold1_best.pth")).to(device)
+    vessel_model = run_vessel_inference.load_model(str(Path(models_dir) / "drive" / "v1" / "fold1_best.pth")).to(device)
     
     eprint("Models loaded. Ready for IPC.")
     

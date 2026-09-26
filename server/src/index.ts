@@ -16,7 +16,9 @@ import { loadModel } from './ml/inference';
 const app: Application = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*'
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,8 +32,10 @@ app.use('/api/reports', reportsRouter);
 app.use('/api/dashboard', dashboardRouter);
 
 // Static routes
-app.use('/outputs', express.static(path.join(process.cwd(), '..', 'data', 'outputs')));
-app.use('/uploads', express.static(path.join(process.cwd(), '..', 'data', 'uploads')));
+const outputDir = process.env.OUTPUT_DIR || path.join(process.cwd(), '..', 'data', 'outputs');
+const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), '..', 'data', 'uploads');
+app.use('/outputs', express.static(outputDir));
+app.use('/uploads', express.static(uploadDir));
 
 // Global Error Handler
 app.use(errorHandler);

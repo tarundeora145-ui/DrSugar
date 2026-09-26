@@ -8,7 +8,7 @@ const PIPELINE_STEPS: Step[] = [
   'PATIENT', 'UPLOAD', 'QUALITY', 'ENHANCEMENT', 'ANALYSIS', 'ASSESSMENT', 'RESULTS'
 ];
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Screening = () => {
   const [currentStep, setCurrentStep] = useState<Step>('PATIENT');

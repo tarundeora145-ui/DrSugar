@@ -14,7 +14,7 @@ interface DatasetInfo {
   last_scanned?: string;
 }
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const Validation = () => {
   const [datasets, setDatasets] = useState<DatasetInfo[]>([]);

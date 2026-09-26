@@ -18,8 +18,9 @@ let session: ort.InferenceSession | null = null;
 let metadata: any = null;
 
 export async function loadModel() {
-  const modelPath = path.resolve(__dirname, '../../../models/dr_classification/model.onnx');
-  const metadataPath = path.resolve(__dirname, '../../../models/dr_classification/metadata.json');
+  const modelsDir = process.env.MODELS_DIR || path.resolve(__dirname, '../../../models');
+  const modelPath = path.join(modelsDir, 'dr_classification', 'model.onnx');
+  const metadataPath = path.join(modelsDir, 'dr_classification', 'metadata.json');
   
   if (!fs.existsSync(modelPath) || !fs.existsSync(metadataPath)) {
     throw new Error('MODEL UNAVAILABLE');
