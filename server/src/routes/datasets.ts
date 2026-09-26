@@ -43,10 +43,6 @@ const DATASET_METADATA: Record<string, { purpose: string; source: string; task: 
 
 const scanDatasetsHandler: RequestHandler = (req, res) => {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-
     const loaders = getLoaders();
     const results = loaders.map(loader => loader.scan());
     
@@ -66,10 +62,6 @@ const scanDatasetsHandler: RequestHandler = (req, res) => {
 };
 
 const getDatasetsHandler: RequestHandler = (req, res) => {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
   const stmt = db.prepare('SELECT * FROM datasets');
   let rows = stmt.all() as any[];
 
