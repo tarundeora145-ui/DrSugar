@@ -14,6 +14,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^22.20.4",
     "better-sqlite3": "^13.0.3",
     "cors": "^2.8.6",
     "csv-parse": "^7.0.2",
@@ -21,15 +26,9 @@
     "express": "^5.2.1",
     "multer": "^2.4.0",
     "onnxruntime-node": "^1.30.0",
-    "sharp": "^0.35.4"
-  },
-  "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/multer": "^2.2.0",
-    "@types/node": "^22.20.4",
+    "sharp": "^0.35.4",
     "ts-node": "^10.9.2",
     "typescript": "^7.0.2"
-  }
+  },
+  "devDependencies": {}
 }
