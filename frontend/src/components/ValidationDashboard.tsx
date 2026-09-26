@@ -213,7 +213,7 @@ export const ValidationDashboard = ({ datasetId }: ValidationDashboardProps) => 
               <thead>
                 <tr className="border-b border-border text-muted-foreground">
                   <th className="p-2 text-left uppercase tracking-widest font-medium">Actual \ Predicted</th>
-                  {GRADE_LABELS.map((g, i) => (
+                  {GRADE_LABELS.map((_, i) => (
                     <th key={i} className="p-2 uppercase tracking-widest font-medium">Gr {i}</th>
                   ))}
                 </tr>
