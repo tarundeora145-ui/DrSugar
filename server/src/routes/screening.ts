@@ -10,8 +10,11 @@ const router = Router();
 
 // ── directories ─────────────────────────────────────────────────────────────
 const rootDir = process.cwd();
-const outputDir = process.env.OUTPUT_DIR || path.join(rootDir, '..', 'data', 'outputs');
-const uploadDir  = process.env.UPLOAD_DIR || path.join(rootDir, '..', 'data', 'uploads');
+const isProd = process.env.NODE_ENV === 'production';
+const defaultOutputDir = isProd ? path.join(rootDir, 'runtime', 'outputs') : path.join(rootDir, '..', 'data', 'outputs');
+const defaultUploadDir = isProd ? path.join(rootDir, 'runtime', 'uploads') : path.join(rootDir, '..', 'data', 'uploads');
+const outputDir = process.env.OUTPUT_DIR || defaultOutputDir;
+const uploadDir  = process.env.UPLOAD_DIR || defaultUploadDir;
 for (const d of [outputDir, uploadDir]) {
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 }

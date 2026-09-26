@@ -31,9 +31,11 @@ app.use('/api/simulation', simulationRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/dashboard', dashboardRouter);
 
-// Static routes
-const outputDir = process.env.OUTPUT_DIR || path.join(process.cwd(), '..', 'data', 'outputs');
-const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), '..', 'data', 'uploads');
+const isProd = process.env.NODE_ENV === 'production';
+const defaultOutputDir = isProd ? path.join(process.cwd(), 'runtime', 'outputs') : path.join(process.cwd(), '..', 'data', 'outputs');
+const defaultUploadDir = isProd ? path.join(process.cwd(), 'runtime', 'uploads') : path.join(process.cwd(), '..', 'data', 'uploads');
+const outputDir = process.env.OUTPUT_DIR || defaultOutputDir;
+const uploadDir = process.env.UPLOAD_DIR || defaultUploadDir;
 app.use('/outputs', express.static(outputDir));
 app.use('/uploads', express.static(uploadDir));
 

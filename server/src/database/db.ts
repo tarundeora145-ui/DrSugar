@@ -3,7 +3,11 @@ import path from 'path';
 import fs from 'fs';
 
 // Point to the root database directory
-const dbPath = process.env.DATABASE_PATH || path.join(path.resolve(__dirname, '../../../database'), 'dr_sugar.db');
+const isProd = process.env.NODE_ENV === 'production';
+const defaultDbPath = isProd 
+  ? path.join(process.cwd(), 'runtime', 'dr_sugar.db') 
+  : path.join(path.resolve(__dirname, '../../../database'), 'dr_sugar.db');
+const dbPath = process.env.DATABASE_PATH || defaultDbPath;
 const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });

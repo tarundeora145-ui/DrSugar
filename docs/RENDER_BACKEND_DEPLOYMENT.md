@@ -3,7 +3,7 @@
 This document explains how to deploy the persistent Express + SQLite backend for DR-SUGAR specifically on Render.
 
 ## Render Service Type
-**Persistent Web Service** (must have a persistent disk mounted).
+**Web Service** (Free Tier or Paid)
 
 ## Root Directory
 `server`
@@ -25,22 +25,21 @@ Configure these in the Render dashboard:
 - `PORT` (Render sets this automatically)
 - `NODE_ENV`: `production`
 - `FRONTEND_URL`: `https://dr-sugar.vercel.app` (or your actual Vercel URL)
-- `DATABASE_PATH`: `/var/data/dr_sugar.db` (must be on the persistent disk)
-- `OUTPUT_DIR`: `/var/data/outputs`
-- `UPLOAD_DIR`: `/var/data/uploads`
 - `MODELS_DIR`: `/opt/render/project/src/models`
 - `PYTHON_BIN`: `python3` (or the exact path to Python 3 on the Render instance)
 - `EVIDENCE_WORKER_PATH`: `/opt/render/project/src/scripts/evidence_worker.py`
 
+*(Note: Data paths like `DATABASE_PATH`, `OUTPUT_DIR`, and `UPLOAD_DIR` will automatically fall back to an ephemeral `./runtime/` directory inside your app if not provided. If you upgrade to a paid persistent disk, you can explicitly set them to `/var/data/...`)*
+
 *(Note: Never expose API keys or passwords in the client frontend. DR-SUGAR does not require any secrets.)*
 
-## Persistent Disk
-A persistent disk MUST be configured on Render because the backend requires persistent storage for:
-- SQLite database (`dr_sugar.db`)
-- Patient uploads (`uploads/`)
-- Grad-CAM, lesion, and vessel generated outputs (`outputs/`)
+## Storage & Ephemeral Data (Free Tier)
+Because Render Free does not support persistent disks, the backend is configured to safely fall back to using `./runtime/` directories for data if `NODE_ENV=production` and paths aren't manually overridden.
+- SQLite database (`./runtime/dr_sugar.db`)
+- Patient uploads (`./runtime/uploads/`)
+- Grad-CAM, lesion, and vessel generated outputs (`./runtime/outputs/`)
 
-Mount path should be (for example): `/var/data`.
+**Warning**: On the Free Tier, any uploaded images, generated evidence, and SQLite data will be wiped whenever Render spins down or redeploys the instance. If you need permanence, upgrade your instance and mount a persistent disk (e.g. to `/var/data`) and override the environment variables above.
 
 ## Python
 The evidence worker uses Python. 
