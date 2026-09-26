@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 const API_BASE_URL = '/api';
-const SERVER_URL = '';
 
 interface EvidenceStatus {
   status: 'PENDING' | 'READY' | 'FAILED';
@@ -60,7 +59,7 @@ export const ExplainabilityPanel = ({ screeningId }: { screeningId: number }) =>
         </h3>
         <div className="w-full aspect-square border border-border bg-black relative flex items-center justify-center overflow-hidden">
           {ev.url ? (
-            <img src={`${SERVER_URL}${ev.url}`} alt={title} className="w-full h-full object-contain" />
+            <img src={ev.url} alt={title} className="w-full h-full object-contain" />
           ) : (
             <div className="space-y-4 z-10 relative text-center p-8">
               {ev.status === 'PENDING' ? (

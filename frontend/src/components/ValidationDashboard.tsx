@@ -31,6 +31,7 @@ export const ValidationDashboard = ({ datasetId }: ValidationDashboardProps) => 
 
   useEffect(() => {
     fetchLatest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasetId]);
 
   const handleRunValidation = async () => {
@@ -47,7 +48,7 @@ export const ValidationDashboard = ({ datasetId }: ValidationDashboardProps) => 
         setErrorMsg(result.message);
       }
       fetchLatest();
-    } catch (e: any) {
+    } catch {
       setErrorMsg('Failed to run validation');
     }
     setRunning(false);

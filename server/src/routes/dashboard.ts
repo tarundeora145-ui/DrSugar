@@ -32,7 +32,8 @@ const getDashboardMetrics: RequestHandler = (req, res) => {
       }
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('[dashboard]', err.message);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 

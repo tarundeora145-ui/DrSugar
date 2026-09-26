@@ -2,7 +2,7 @@ import { Router, RequestHandler } from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
-import { exec, spawn, ChildProcess } from 'child_process';
+import { spawn, ChildProcess } from 'child_process';
 import db from '../database/db';
 import { runInference } from '../ml/inference';
 

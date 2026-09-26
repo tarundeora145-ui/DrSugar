@@ -40,6 +40,7 @@ const Validation = () => {
 
   useEffect(() => {
     fetchDatasets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleScanDatasets = async () => {

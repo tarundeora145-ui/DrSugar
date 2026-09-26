@@ -23,7 +23,8 @@ const getReportsHandler: RequestHandler = (req, res) => {
 
     res.json({ success: true, data: records });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('[reports]', error.message);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 

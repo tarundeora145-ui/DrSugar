@@ -3,7 +3,6 @@ import cors from 'cors';
 import { config } from './config/env';
 import healthRouter from './routes/health';
 import datasetsRouter from './routes/datasets';
-import modelsRouter from './routes/models';
 import screeningRouter from './routes/screening';
 import validationRouter from './routes/validation';
 import simulationRouter from './routes/simulation';
@@ -24,7 +23,6 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/health', healthRouter);
 app.use('/api/datasets', datasetsRouter);
-app.use('/api/models', modelsRouter);
 app.use('/api/screening', screeningRouter);
 app.use('/api/validation', validationRouter);
 app.use('/api/simulation', simulationRouter);
@@ -38,12 +36,14 @@ app.use('/uploads', express.static(path.join(process.cwd(), '..', 'data', 'uploa
 // Global Error Handler
 app.use(errorHandler);
 
-loadModel().then(() => {
-  console.log('ONNX classification model loaded into memory.');
-  app.listen(config.port, () => {
-    console.log(`Server running on port ${config.port} in ${config.nodeEnv} mode.`);
-  });
-}).catch((err) => {
-  console.error('Failed to load ONNX model at startup:', err);
-  process.exit(1);
+app.listen(config.port, () => {
+  console.log(`Server running on port ${config.port} in ${config.nodeEnv} mode.`);
 });
+
+loadModel()
+  .then(() => {
+    console.log('ONNX classification model loaded.');
+  })
+  .catch((err) => {
+    console.warn('ONNX model unavailable — screening inference disabled:', err.message);
+  });

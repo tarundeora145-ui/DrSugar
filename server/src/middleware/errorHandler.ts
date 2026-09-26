@@ -6,10 +6,10 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.error(`[Error] ${err.message}`);
+  console.error(`[Error] ${req.method} ${req.path} — ${err.message}`);
   
   res.status(500).json({
     success: false,
-    message: err.message || 'Internal Server Error',
+    message: 'Internal Server Error',
   });
 };

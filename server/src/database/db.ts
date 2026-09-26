@@ -11,7 +11,7 @@ if (!fs.existsSync(dbDir)) {
 const dbPath = path.join(dbDir, 'dr_sugar.db');
 
 // Initialize database
-const db = new Database(dbPath, { verbose: console.log });
+const db = new Database(dbPath);
 
 // Enable WAL mode for better performance
 db.pragma('journal_mode = WAL');

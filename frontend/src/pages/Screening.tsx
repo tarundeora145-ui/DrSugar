@@ -83,7 +83,7 @@ const Screening = () => {
         setStatus('COMPLETED');
         setCurrentStep('RESULTS');
       }
-    } catch (err) {
+    } catch {
       setStatus('ERROR');
       setErrorMessage('Failed to connect to backend.');
       setCurrentStep('ASSESSMENT');
@@ -116,7 +116,7 @@ const Screening = () => {
         setStatus('ERROR');
         setErrorMessage('Upload failed.');
       }
-    } catch (err) {
+    } catch {
       setStatus('ERROR');
       setErrorMessage('Upload failed. Network error.');
     }

@@ -43,28 +43,35 @@ export const DataExplorer = ({ selectedDataset, onDatasetChange }: DataExplorerP
           if (onDatasetChange) onDatasetChange(initial);
         }
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedDataset && selectedDataset !== activeDataset) {
       setActiveDataset(selectedDataset);
     }
-  }, [selectedDataset]);
+  }, [selectedDataset, activeDataset]);
 
   useEffect(() => {
     if (!activeDataset) return;
-    if (onDatasetChange) onDatasetChange(activeDataset);
+    
+    let isSubscribed = true;
+    
     setLoading(true);
     fetch(`${API_BASE_URL}/datasets/${activeDataset}/images`)
       .then(res => res.json())
       .then(data => {
+        if (!isSubscribed) return;
         setImages(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch(() => {
+        if (!isSubscribed) return;
         setImages([]);
         setLoading(false);
       });
+      
+    return () => { isSubscribed = false; };
   }, [activeDataset]);
 
   const handleSelect = (id: string) => {
