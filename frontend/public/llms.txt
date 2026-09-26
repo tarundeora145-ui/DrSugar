@@ -1,0 +1,15 @@
+# DR-SUGAR
+
+Explainable AI for Diabetic Retinopathy Screening for resource-constrained environments.
+
+## Features
+- Deep Learning AI for Retinopathy detection
+- Real-time screening dashboard
+- Clinical validation reporting
+
+## Pages
+- Home: https://drsugar.app/
+- Dashboard: https://drsugar.app/dashboard
+- Screening: https://drsugar.app/screening
+- Privacy Policy: https://drsugar.app/privacy
+- Terms: https://drsugar.app/terms

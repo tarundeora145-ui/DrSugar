@@ -8,6 +8,9 @@ import DoctorReport from './pages/DoctorReport';
 import PatientReport from './pages/PatientReport';
 import Simulation from './pages/Simulation';
 import Validation from './pages/Validation';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import NotFound from './pages/NotFound';
 import { cn } from './lib/utils';
 import { ThemeProvider, useTheme } from './ThemeContext';
 
@@ -61,8 +64,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
       {children}
     </main>
     <footer className="px-8 py-12 text-muted-foreground text-sm font-light mt-auto">
-      <div className="border-t border-border pt-8 flex justify-between">
+      <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between gap-4">
         <span>Explainable AI for Diabetic Retinopathy</span>
+        <div className="flex gap-4">
+          <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-foreground transition-colors">Terms & Conditions</Link>
+        </div>
         <span>Prototype Version</span>
       </div>
     </footer>
@@ -83,6 +90,9 @@ function App() {
             <Route path="/reports/:id/patient" element={<PatientReport />} />
             <Route path="/simulation" element={<Simulation />} />
             <Route path="/validation" element={<Validation />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsConditions />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
       </Router>
@@ -91,3 +101,4 @@ function App() {
 }
 
 export default App;
+
